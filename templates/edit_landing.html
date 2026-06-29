@@ -1,0 +1,818 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Landing - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {{ page_header('Landing', url_for('admin_modules', course_id=course.id), [{'title': 'Dashboard', 'url': url_for('dashboard')}, {'title': 'Admin Panel', 'url': url_for('admin')}, {'title': 'Courses', 'url': url_for('admin_courses')}, {'title': course.title, 'url': url_for('admin_modules', course_id=course.id)}, {'title': 'Landing', 'url': None}]) }}
+
+    <div class="row">
+        <div class="col-12">
+
+            <div class="row">
+                <!-- Редактор -->
+                <div class="col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form method="POST" enctype="multipart/form-data">
+                                <h5 class="card-title mb-3 border-bottom pb-2">Header</h5>
+                                <div class="mb-3">
+                                    <label for="header_title" class="form-label">Title *</label>
+                                    <input type="text" class="form-control" id="header_title" name="header_title" 
+                                           value="{{ (landing_page and landing_page.header_title) or course.title }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="header_subtitle" class="form-label">Subtitle</label>
+                                    <textarea class="form-control" id="header_subtitle" name="header_subtitle" rows="3">{{ (landing_page and landing_page.header_subtitle) or '' }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="header_background_image" class="form-label">Background Image</label>
+                                    <input type="file" class="form-control" id="header_background_image" name="header_background_image" accept="image/*">
+                                    {% if landing_page and landing_page.header_background_image %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">Current image:</small><br>
+                                        <img src="{{ url_for('static', filename='uploads/' + landing_page.header_background_image) }}" 
+                                             alt="Background" style="max-height: 150px; border-radius: 8px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="header_call_to_action" class="form-label">Call to Action Button Text</label>
+                                    <input type="text" class="form-control" id="header_call_to_action" name="header_call_to_action" 
+                                           value="{{ (landing_page and landing_page.header_call_to_action) or '' }}">
+                                </div>
+
+                                <h5 class="card-title mb-3 mt-4 border-bottom pb-2">Target Audience</h5>
+                                <div class="mb-3">
+                                    <label for="audience_section_title" class="form-label">Section Title</label>
+                                    <input type="text" class="form-control" id="audience_section_title" name="audience_section_title" 
+                                           value="{{ (landing_page and landing_page.audience_section_title) or 'Who is this course for?' }}">
+                                </div>
+                                <div class="mb-2">
+                                    <div id="audience-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-audience-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Audience Item
+                                    </button>
+                                    <input type="hidden" id="target_audience" name="target_audience" 
+                                           value="{{ (landing_page and landing_page.target_audience) or '[]' }}">
+                                </div>
+
+                                <h5 class="card-title mb-3 mt-4 border-bottom pb-2">Timeline</h5>
+                                <div class="mb-3">
+                                    <label for="timeline_section_title" class="form-label">Section Title</label>
+                                    <input type="text" class="form-control" id="timeline_section_title" name="timeline_section_title" 
+                                           value="{{ (landing_page and landing_page.timeline_section_title) or 'How does the course work?' }}">
+                                </div>
+                                <div class="mb-2">
+                                    <div id="timeline-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-timeline-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Timeline Stage
+                                    </button>
+                                    <input type="hidden" id="timeline" name="timeline" 
+                                           value="{{ (landing_page and landing_page.timeline) or '[]' }}">
+                                </div>
+
+                                <h5 class="card-title mb-3 mt-4 border-bottom pb-2">Course Program</h5>
+                                <div class="mb-3">
+                                    <label for="course_program_section_title" class="form-label">Section Title</label>
+                                    <input type="text" class="form-control" id="course_program_section_title" name="course_program_section_title" 
+                                           value="{{ (landing_page and landing_page.course_program_section_title) or 'Course Program' }}">
+                                </div>
+                                <div class="mb-2">
+                                    <div id="course-program-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-course-program-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Module
+                                    </button>
+                                    <input type="hidden" id="course_program" name="course_program" 
+                                           value="{{ (landing_page and landing_page.course_program) or '[]' }}">
+                                </div>
+
+                                <h5 class="card-title mb-3 mt-4 border-bottom pb-2">Course Topics</h5>
+                                <div class="mb-3">
+                                    <label for="topics_section_title" class="form-label">Section Title</label>
+                                    <input type="text" class="form-control" id="topics_section_title" name="topics_section_title" 
+                                           value="{{ (landing_page and landing_page.topics_section_title) or 'Course Topics' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="topics_section_description" class="form-label">Section Description</label>
+                                    <textarea class="form-control" id="topics_section_description" name="topics_section_description" rows="2">{{ (landing_page and landing_page.topics_section_description) or '' }}</textarea>
+                                </div>
+                                <div class="mb-2">
+                                    <div id="topics-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-topics-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Topic
+                                    </button>
+                                    <input type="hidden" id="topics" name="topics" 
+                                           value="{{ (landing_page and landing_page.topics) or '[]' }}">
+                                </div>
+
+                                <h5 class="card-title mb-3 mt-4 border-bottom pb-2">FAQ</h5>
+                                <div class="mb-3">
+                                    <label for="faq_section_title" class="form-label">Section Title</label>
+                                    <input type="text" class="form-control" id="faq_section_title" name="faq_section_title" 
+                                           value="{{ (landing_page and landing_page.faq_section_title) or 'Frequently Asked Questions' }}">
+                                </div>
+                                <div class="mb-2">
+                                    <div id="faq-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-faq-btn">
+                                        <i class="fas fa-plus me-1"></i>Add FAQ Item
+                                    </button>
+                                    <input type="hidden" id="faq" name="faq" 
+                                           value="{{ (landing_page and landing_page.faq) or '[]' }}">
+                                </div>
+
+                                <h5 class="card-title mb-3 mt-4 border-bottom pb-2">Call to Action</h5>
+                                <div class="mb-3">
+                                    <label for="cta_title" class="form-label">CTA Title</label>
+                                    <input type="text" class="form-control" id="cta_title" name="cta_title" 
+                                           value="{{ (landing_page and landing_page.cta_title) or '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cta_text" class="form-label">CTA Text</label>
+                                    <textarea class="form-control" id="cta_text" name="cta_text" rows="2">{{ (landing_page and landing_page.cta_text) or '' }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cta_image" class="form-label">CTA Image</label>
+                                    <input type="file" class="form-control" id="cta_image" name="cta_image" accept="image/*">
+                                    {% if landing_page and landing_page.cta_image %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">Current image:</small><br>
+                                        <img src="{{ url_for('static', filename='uploads/' + landing_page.cta_image) }}" 
+                                             alt="CTA" style="max-height: 150px; border-radius: 8px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <hr class="mt-4">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                               {% if landing_page and landing_page.is_active %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_active">Active</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-save me-2"></i>Save
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Предпросмотр -->
+                <div class="col-lg-6 d-none d-lg-block">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Preview</h5>
+                            
+                            <div class="ratio ratio-16x9 border rounded overflow-hidden">
+                                <iframe src="{{ url_for('preview_landing', course_id=course.id) }}" 
+                                        frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('preview_landing', course_id=course.id) }}" 
+                                   target="_blank" class="btn btn-outline-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>Open in new tab
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const audienceContainer = document.getElementById('audience-container');
+const targetAudienceInput = document.getElementById('target_audience');
+const addAudienceBtn = document.getElementById('add-audience-btn');
+
+// Icon options for audience cards
+const iconOptions = [
+    { value: 'fas fa-user', label: 'User' },
+    { value: 'fas fa-briefcase', label: 'Professional' },
+    { value: 'fas fa-graduation-cap', label: 'Student' },
+    { value: 'fas fa-code', label: 'Developer' },
+    { value: 'fas fa-chart-line', label: 'Analyst' },
+    { value: 'fas fa-laptop', label: 'Laptop' },
+    { value: 'fas fa-paint-brush', label: 'Designer' },
+    { value: 'fas fa-bullhorn', label: 'Marketer' },
+    { value: 'fas fa-users', label: 'Team' },
+    { value: 'fas fa-lightbulb', label: 'Idea' },
+    { value: 'fas fa-rocket', label: 'Startup' },
+    { value: 'fas fa-book', label: 'Learning' },
+    { value: 'fas fa-cogs', label: 'Engineer' },
+    { value: 'fas fa-camera', label: 'Photographer' },
+    { value: 'fas fa-music', label: 'Musician' },
+];
+
+let audienceItems = [];
+
+// Load existing audience items
+const existingData = {{ ((landing_page and landing_page.target_audience) or '[]') | safe }};
+if (Array.isArray(existingData)) {
+    audienceItems = existingData;
+}
+
+function createAudienceCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'audience-item card mb-2 p-3';
+    card.dataset.index = index;
+    
+    const iconOptionsHtml = iconOptions.map(opt => 
+        `<option value="${opt.value}" ${item.image === opt.value ? 'selected' : ''}>${opt.label}</option>`
+    ).join('');
+    
+    card.innerHTML = `
+        <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-sm audience-icon" style="width: 180px;">
+                <option value="">Select icon</option>
+                ${iconOptionsHtml}
+            </select>
+            <input type="text" class="form-control form-control-sm audience-title" placeholder="Title" value="${item.title || ''}">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-audience-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <textarea class="form-control form-control-sm audience-description" rows="2" placeholder="Description (optional)">${item.description || ''}</textarea>
+        </div>
+    `;
+    
+    return card;
+}
+
+function renderAudienceItems() {
+    audienceContainer.innerHTML = '';
+    audienceItems.forEach((item, index) => {
+        const card = createAudienceCard(item, index);
+        audienceContainer.appendChild(card);
+    });
+}
+
+function updateHiddenInput() {
+    targetAudienceInput.value = JSON.stringify(audienceItems);
+}
+
+function syncFromUI() {
+    const cards = audienceContainer.querySelectorAll('.audience-item');
+    audienceItems = [];
+    cards.forEach(card => {
+        const icon = card.querySelector('.audience-icon').value;
+        const title = card.querySelector('.audience-title').value;
+        const description = card.querySelector('.audience-description').value;
+        if (title || icon || description) {
+            audienceItems.push({ image: icon, title: title, description: description });
+        }
+    });
+    updateHiddenInput();
+}
+
+addAudienceBtn.addEventListener('click', () => {
+    audienceItems.push({ image: '', title: '', description: '' });
+    renderAudienceItems();
+    updateHiddenInput();
+    const lastCard = audienceContainer.querySelector('.audience-item:last-child .audience-title');
+    if (lastCard) lastCard.focus();
+});
+
+audienceContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-audience-btn')) {
+        const card = e.target.closest('.audience-item');
+        const index = parseInt(card.dataset.index);
+        audienceItems.splice(index, 1);
+        renderAudienceItems();
+        updateHiddenInput();
+    }
+});
+
+audienceContainer.addEventListener('input', syncFromUI);
+audienceContainer.addEventListener('change', syncFromUI);
+
+// Initial render
+renderAudienceItems();
+updateHiddenInput();
+
+// Timeline management
+const timelineContainer = document.getElementById('timeline-container');
+const timelineInput = document.getElementById('timeline');
+const addTimelineBtn = document.getElementById('add-timeline-btn');
+
+const timelineIconOptions = [
+    { value: 'fas fa-play', label: 'Start' },
+    { value: 'fas fa-book-open', label: 'Learning' },
+    { value: 'fas fa-tasks', label: 'Tasks' },
+    { value: 'fas fa-video', label: 'Video' },
+    { value: 'fas fa-comments', label: 'Communication' },
+    { value: 'fas fa-check-circle', label: 'Completion' },
+    { value: 'fas fa-certificate', label: 'Certificate' },
+    { value: 'fas fa-laptop-code', label: 'Practice' },
+    { value: 'fas fa-users', label: 'Group' },
+    { value: 'fas fa-user-tie', label: 'Mentor' },
+    { value: 'fas fa-clipboard-list', label: 'Test' },
+    { value: 'fas fa-project-diagram', label: 'Project' },
+];
+
+let timelineItems = [];
+
+const existingTimeline = {{ ((landing_page and landing_page.timeline) or '[]') | safe }};
+if (Array.isArray(existingTimeline)) {
+    timelineItems = existingTimeline;
+}
+
+function createTimelineCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'timeline-item card mb-2 p-3';
+    card.dataset.index = index;
+    
+    const iconOptionsHtml = timelineIconOptions.map(opt => 
+        `<option value="${opt.value}" ${item.image === opt.value ? 'selected' : ''}>${opt.label}</option>`
+    ).join('');
+    
+    card.innerHTML = `
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-primary timeline-badge">${index + 1}</span>
+            <select class="form-select form-select-sm timeline-icon" style="width: 180px;">
+                <option value="">Select icon</option>
+                ${iconOptionsHtml}
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-timeline-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <input type="text" class="form-control form-control-sm timeline-title mb-2" placeholder="Stage title" value="${item.title || ''}">
+        <textarea class="form-control form-control-sm timeline-description" rows="2" placeholder="Stage description">${item.description || ''}</textarea>
+    `;
+    
+    return card;
+}
+
+function renderTimelineItems() {
+    timelineContainer.innerHTML = '';
+    timelineItems.forEach((item, index) => {
+        const card = createTimelineCard(item, index);
+        timelineContainer.appendChild(card);
+    });
+}
+
+function updateTimelineInput() {
+    timelineInput.value = JSON.stringify(timelineItems);
+}
+
+function syncTimelineFromUI() {
+    const cards = timelineContainer.querySelectorAll('.timeline-item');
+    timelineItems = [];
+    cards.forEach(card => {
+        const icon = card.querySelector('.timeline-icon').value;
+        const title = card.querySelector('.timeline-title').value;
+        const description = card.querySelector('.timeline-description').value;
+        if (title || icon || description) {
+            timelineItems.push({ image: icon, title: title, description: description });
+        }
+    });
+    updateTimelineInput();
+}
+
+addTimelineBtn.addEventListener('click', () => {
+    timelineItems.push({ image: '', title: '', description: '' });
+    renderTimelineItems();
+    updateTimelineInput();
+    const lastCard = timelineContainer.querySelector('.timeline-item:last-child .timeline-title');
+    if (lastCard) lastCard.focus();
+});
+
+timelineContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-timeline-btn')) {
+        const card = e.target.closest('.timeline-item');
+        const index = parseInt(card.dataset.index);
+        timelineItems.splice(index, 1);
+        renderTimelineItems();
+        updateTimelineInput();
+    }
+});
+
+timelineContainer.addEventListener('input', syncTimelineFromUI);
+timelineContainer.addEventListener('change', syncTimelineFromUI);
+
+renderTimelineItems();
+updateTimelineInput();
+
+// Course Program management
+const courseProgramContainer = document.getElementById('course-program-container');
+const courseProgramInput = document.getElementById('course_program');
+const addCourseProgramBtn = document.getElementById('add-course-program-btn');
+
+const courseProgramIconOptions = [
+    { value: 'fas fa-book', label: 'Module' },
+    { value: 'fas fa-play-circle', label: 'Introduction' },
+    { value: 'fas fa-layer-group', label: 'Basics' },
+    { value: 'fas fa-rocket', label: 'Advanced' },
+    { value: 'fas fa-code', label: 'Practice' },
+    { value: 'fas fa-brain', label: 'Theory' },
+    { value: 'fas fa-chart-bar', label: 'Analytics' },
+    { value: 'fas fa-cogs', label: 'Tools' },
+    { value: 'fas fa-trophy', label: 'Final' },
+    { value: 'fas fa-graduation-cap', label: 'Certification' },
+    { value: 'fas fa-folder-open', label: 'Resources' },
+    { value: 'fas fa-question-circle', label: 'FAQ' },
+];
+
+let courseProgramItems = [];
+
+const existingCourseProgram = {{ ((landing_page and landing_page.course_program) or '[]') | safe }};
+if (Array.isArray(existingCourseProgram)) {
+    courseProgramItems = existingCourseProgram;
+}
+
+function createCourseProgramCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'course-program-item card mb-2 p-3';
+    card.dataset.index = index;
+    
+    const iconOptionsHtml = courseProgramIconOptions.map(opt => 
+        `<option value="${opt.value}" ${item.image === opt.value ? 'selected' : ''}>${opt.label}</option>`
+    ).join('');
+    
+    card.innerHTML = `
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <select class="form-select form-select-sm course-program-icon" style="width: 180px;">
+                <option value="">Select icon</option>
+                ${iconOptionsHtml}
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-course-program-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <input type="text" class="form-control form-control-sm course-program-title mb-2" placeholder="Module name" value="${item.title || ''}">
+        <textarea class="form-control form-control-sm course-program-description" rows="2" placeholder="Module description">${item.description || ''}</textarea>
+    `;
+    
+    return card;
+}
+
+function renderCourseProgramItems() {
+    courseProgramContainer.innerHTML = '';
+    courseProgramItems.forEach((item, index) => {
+        const card = createCourseProgramCard(item, index);
+        courseProgramContainer.appendChild(card);
+    });
+}
+
+function updateCourseProgramInput() {
+    courseProgramInput.value = JSON.stringify(courseProgramItems);
+}
+
+function syncCourseProgramFromUI() {
+    const cards = courseProgramContainer.querySelectorAll('.course-program-item');
+    courseProgramItems = [];
+    cards.forEach(card => {
+        const icon = card.querySelector('.course-program-icon').value;
+        const title = card.querySelector('.course-program-title').value;
+        const description = card.querySelector('.course-program-description').value;
+        if (title || icon || description) {
+            courseProgramItems.push({ image: icon, title: title, description: description });
+        }
+    });
+    updateCourseProgramInput();
+}
+
+addCourseProgramBtn.addEventListener('click', () => {
+    courseProgramItems.push({ image: '', title: '', description: '' });
+    renderCourseProgramItems();
+    updateCourseProgramInput();
+    const lastCard = courseProgramContainer.querySelector('.course-program-item:last-child .course-program-title');
+    if (lastCard) lastCard.focus();
+});
+
+courseProgramContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-course-program-btn')) {
+        const card = e.target.closest('.course-program-item');
+        const index = parseInt(card.dataset.index);
+        courseProgramItems.splice(index, 1);
+        renderCourseProgramItems();
+        updateCourseProgramInput();
+    }
+});
+
+courseProgramContainer.addEventListener('input', syncCourseProgramFromUI);
+courseProgramContainer.addEventListener('change', syncCourseProgramFromUI);
+
+renderCourseProgramItems();
+updateCourseProgramInput();
+
+// FAQ management
+const faqContainer = document.getElementById('faq-container');
+const faqInput = document.getElementById('faq');
+const addFaqBtn = document.getElementById('add-faq-btn');
+
+let faqItems = [];
+
+const existingFaq = {{ ((landing_page and landing_page.faq) or '[]') | safe }};
+if (Array.isArray(existingFaq)) {
+    faqItems = existingFaq;
+}
+
+function createFaqCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'faq-item card mb-2 p-3';
+    card.dataset.index = index;
+    
+    card.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-info">Question ${index + 1}</span>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-faq-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <input type="text" class="form-control form-control-sm faq-question mb-2" placeholder="Question" value="${item.question || ''}">
+        <textarea class="form-control form-control-sm faq-answer" rows="3" placeholder="Answer">${item.answer || ''}</textarea>
+    `;
+    
+    return card;
+}
+
+function renderFaqItems() {
+    faqContainer.innerHTML = '';
+    faqItems.forEach((item, index) => {
+        const card = createFaqCard(item, index);
+        faqContainer.appendChild(card);
+    });
+}
+
+function updateFaqInput() {
+    faqInput.value = JSON.stringify(faqItems);
+}
+
+function syncFaqFromUI() {
+    const cards = faqContainer.querySelectorAll('.faq-item');
+    faqItems = [];
+    cards.forEach(card => {
+        const question = card.querySelector('.faq-question').value;
+        const answer = card.querySelector('.faq-answer').value;
+        if (question || answer) {
+            faqItems.push({ question: question, answer: answer });
+        }
+    });
+    updateFaqInput();
+}
+
+addFaqBtn.addEventListener('click', () => {
+    faqItems.push({ question: '', answer: '' });
+    renderFaqItems();
+    updateFaqInput();
+    const lastCard = faqContainer.querySelector('.faq-item:last-child .faq-question');
+    if (lastCard) lastCard.focus();
+});
+
+faqContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-faq-btn')) {
+        const card = e.target.closest('.faq-item');
+        const index = parseInt(card.dataset.index);
+        faqItems.splice(index, 1);
+        renderFaqItems();
+        updateFaqInput();
+    }
+});
+
+faqContainer.addEventListener('input', syncFaqFromUI);
+faqContainer.addEventListener('change', syncFaqFromUI);
+
+renderFaqItems();
+updateFaqInput();
+
+// Topics management
+const topicsContainer = document.getElementById('topics-container');
+const topicsInput = document.getElementById('topics');
+const addTopicsBtn = document.getElementById('add-topics-btn');
+
+const topicIconOptions = [
+    { value: 'fas fa-check-circle', label: 'Checkmark' },
+    { value: 'fas fa-star', label: 'Star' },
+    { value: 'fas fa-arrow-right', label: 'Arrow' },
+    { value: 'fas fa-play', label: 'Play' },
+    { value: 'fas fa-bookmark', label: 'Bookmark' },
+    { value: 'fas fa-circle', label: 'Dot' },
+    { value: 'fas fa-square', label: 'Square' },
+    { value: 'fas fa-chevron-right', label: 'Chevron' },
+];
+
+let topicsItems = [];
+
+const existingTopics = {{ ((landing_page and landing_page.topics) or '[]') | safe }};
+if (Array.isArray(existingTopics)) {
+    topicsItems = existingTopics;
+}
+
+function createTopicCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'topic-item card mb-3 p-3';
+    card.dataset.index = index;
+    
+    const subitems = item.subitems || [];
+    const subitemsHtml = subitems.map((sub, i) => `
+        <div class="subitem-row d-flex align-items-center gap-2 mb-1">
+            <select class="form-select form-select-sm topic-icon" style="width: 140px;">
+                ${topicIconOptions.map(opt => `<option value="${opt.value}" ${sub.icon === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('')}
+            </select>
+            <input type="text" class="form-control form-control-sm topic-name" value="${sub.name || ''}" placeholder="Subitem">
+            <button type="button" class="btn btn-sm btn-outline-secondary remove-subitem-btn">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+    `).join('');
+    
+    card.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-primary">Topic ${index + 1}</span>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-info add-subitem-btn">
+                    <i class="fas fa-plus me-1"></i>Subitem
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-topic-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <input type="text" class="form-control form-control-sm topic-title mb-2" placeholder="Topic name" value="${item.title || ''}">
+        <textarea class="form-control form-control-sm topic-description mb-2" rows="2" placeholder="Topic description">${item.description || ''}</textarea>
+        <div class="subitems-container">
+            ${subitemsHtml}
+        </div>
+    `;
+    
+    return card;
+}
+
+function renderTopicsItems() {
+    topicsContainer.innerHTML = '';
+    topicsItems.forEach((item, index) => {
+        const card = createTopicCard(item, index);
+        topicsContainer.appendChild(card);
+    });
+}
+
+function updateTopicsInput() {
+    topicsInput.value = JSON.stringify(topicsItems);
+}
+
+function syncTopicsFromUI() {
+    const cards = topicsContainer.querySelectorAll('.topic-item');
+    topicsItems = [];
+    cards.forEach(card => {
+        const title = card.querySelector('.topic-title').value;
+        const description = card.querySelector('.topic-description').value;
+        const subitemRows = card.querySelectorAll('.subitem-row');
+        const subitems = [];
+        subitemRows.forEach(row => {
+            const icon = row.querySelector('.topic-icon').value;
+            const name = row.querySelector('.topic-name').value;
+            if (name || icon) {
+                subitems.push({ icon: icon, name: name });
+            }
+        });
+        if (title || description || subitems.length > 0) {
+            topicsItems.push({ title: title, description: description, subitems: subitems });
+        }
+    });
+    updateTopicsInput();
+}
+
+addTopicsBtn.addEventListener('click', () => {
+    topicsItems.push({ title: '', description: '', subitems: [] });
+    renderTopicsItems();
+    updateTopicsInput();
+    const lastCard = topicsContainer.querySelector('.topic-item:last-child .topic-title');
+    if (lastCard) lastCard.focus();
+});
+
+topicsContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-topic-btn')) {
+        const card = e.target.closest('.topic-item');
+        const index = parseInt(card.dataset.index);
+        topicsItems.splice(index, 1);
+        renderTopicsItems();
+        updateTopicsInput();
+    }
+    if (e.target.closest('.add-subitem-btn')) {
+        const card = e.target.closest('.topic-item');
+        const index = parseInt(card.dataset.index);
+        topicsItems[index].subitems.push({ icon: 'fas fa-check-circle', name: '' });
+        renderTopicsItems();
+        updateTopicsInput();
+        const lastSubitem = card.querySelector('.subitems-container .topic-name:last-child');
+        if (lastSubitem) lastSubitem.focus();
+    }
+    if (e.target.closest('.remove-subitem-btn')) {
+        const row = e.target.closest('.subitem-row');
+        const card = row.closest('.topic-item');
+        const index = parseInt(card.dataset.index);
+        const subIndex = Array.from(card.querySelectorAll('.subitem-row')).indexOf(row);
+        topicsItems[index].subitems.splice(subIndex, 1);
+        renderTopicsItems();
+        updateTopicsInput();
+    }
+});
+
+topicsContainer.addEventListener('input', syncTopicsFromUI);
+topicsContainer.addEventListener('change', syncTopicsFromUI);
+
+renderTopicsItems();
+updateTopicsInput();
+</script>
+
+<style>
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #6c757d;
+}
+
+.ratio {
+    background: #f8f9fa;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.audience-item {
+    background: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.audience-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.timeline-item {
+    background: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.timeline-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.timeline-badge {
+    min-width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.course-program-item {
+    background: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.course-program-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.faq-item {
+    background: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.faq-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.topic-item {
+    background: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.topic-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.subitem-row {
+    padding: 4px 0;
+}
+</style>
+{% endblock %}

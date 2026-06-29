@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Landing Color Scheme{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {{ page_header('Landing Color Scheme', url_for('admin'), [{'title': 'Dashboard', 'url': url_for('dashboard')}, {'title': 'Admin Panel', 'url': url_for('admin')}, {'title': 'Color Scheme', 'url': None}]) }}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="primary_color" class="form-label">Primary Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="primary_color" name="primary_color" value="{{ theme.primary_color if theme else '#007bff' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.primary_color if theme else '#007bff' }}" data-target="primary_color">
+                                </div>
+                                <small class="text-muted">Buttons, links, accents</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="secondary_color" class="form-label">Secondary Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="secondary_color" name="secondary_color" value="{{ theme.secondary_color if theme else '#0056b3' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.secondary_color if theme else '#0056b3' }}" data-target="secondary_color">
+                                </div>
+                                <small class="text-muted">Gradients, hover effects</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="heading_color" class="form-label">Heading Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="heading_color" name="heading_color" value="{{ theme.heading_color if theme else '#333333' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.heading_color if theme else '#333333' }}" data-target="heading_color">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="text_color" class="form-label">Text Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="text_color" name="text_color" value="{{ theme.text_color if theme else '#666666' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.text_color if theme else '#666666' }}" data-target="text_color">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bg_color" class="form-label">Section Background Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="bg_color" name="bg_color" value="{{ theme.bg_color if theme else '#f8f9fa' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.bg_color if theme else '#f8f9fa' }}" data-target="bg_color">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="accent_color" class="form-label">Accent Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="accent_color" name="accent_color" value="{{ theme.accent_color if theme else '#ffc107' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.accent_color if theme else '#ffc107' }}" data-target="accent_color">
+                                </div>
+                                <small class="text-muted">Price, highlights</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="button_color" class="form-label">CTA Button Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="button_color" name="button_color" value="{{ theme.button_color if theme else '#007bff' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.button_color if theme else '#007bff' }}" data-target="button_color">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="button_text_color" class="form-label">Button Text Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color color-picker" id="button_text_color" name="button_text_color" value="{{ theme.button_text_color if theme else '#ffffff' }}">
+                                    <input type="text" class="form-control color-value" value="{{ theme.button_text_color if theme else '#ffffff' }}" data-target="button_text_color">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="mb-3">
+                            <h6>Preview:</h6>
+                            <div id="preview-box" class="p-4 rounded" style="background: {{ theme.bg_color if theme else '#f8f9fa' }};">
+                                <h3 style="color: {{ theme.heading_color if theme else '#333333' }};">Sample Heading</h3>
+                                <p style="color: {{ theme.text_color if theme else '#666666' }};">Sample text with course description.</p>
+                                <p style="color: {{ theme.accent_color if theme else '#ffc107' }}; font-size: 1.5rem; font-weight: 700;">9990.00 $</p>
+                                <a href="#" class="btn" style="background: {{ theme.button_color if theme else '#007bff' }}; color: {{ theme.button_text_color if theme else '#ffffff' }}; border-radius: 50px; padding: 10px 30px;">Enroll Now</a>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.color-picker').forEach(picker => {
+    picker.addEventListener('input', (e) => {
+        const name = e.target.id;
+        const valueInput = document.querySelector(`.color-value[data-target="${name}"]`);
+        valueInput.value = e.target.value;
+        updatePreview();
+    });
+});
+
+document.querySelectorAll('.color-value').forEach(input => {
+    input.addEventListener('input', (e) => {
+        const target = e.target.dataset.target;
+        const picker = document.getElementById(target);
+        if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+            picker.value = e.target.value;
+            updatePreview();
+        }
+    });
+});
+
+function updatePreview() {
+    const box = document.getElementById('preview-box');
+    box.style.background = document.getElementById('bg_color').value;
+    box.querySelector('h3').style.color = document.getElementById('heading_color').value;
+    box.querySelector('p').style.color = document.getElementById('text_color').value;
+    box.querySelectorAll('p')[1].style.color = document.getElementById('accent_color').value;
+    const btn = box.querySelector('.btn');
+    btn.style.background = document.getElementById('button_color').value;
+    btn.style.color = document.getElementById('button_text_color').value;
+}
+</script>
+
+<style>
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #6c757d;
+}
+
+.color-picker {
+    width: 50px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+.color-value {
+    font-family: monospace;
+}
+</style>
+{% endblock %}

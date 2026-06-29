@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}{{ course.title }} - Courses{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {{ page_header(course.title, url_for('courses'), breadcrumbs) }}
+
+    <!-- Заголовок курса -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="row g-0 d-flex">
+                    {% if course.image %}
+                    <div class="col-md-4 d-flex">
+                        <img src="{{ url_for('static', filename='uploads/' + course.image) }}" 
+                             alt="{{ course.title }}" 
+                             class="img-fluid rounded-start h-100 object-fit-cover"
+                             style="min-height: 300px;"
+                             onerror="this.src='{{ url_for('static', filename='images/course-placeholder.jpg') }}'">
+                    </div>
+                    {% endif %}
+                    <div class="{% if course.image %}col-md-8{% else %}col-12{% endif %} d-flex">
+                        <div class="card-body p-4 d-flex flex-column w-100">
+                            <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-start mb-3 gap-2">
+                                <div>
+                                    {% if course.price %}
+                                        <span class="badge bg-success fs-6">
+                                            <i class="fas fa-tag me-1"></i>{{ "%.2f"|format(course.price) }} $
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary fs-6">
+                                            <i class="fas fa-gift me-1"></i>Free
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if course.description %}
+                            <p class="card-text text-muted mb-4">{{ course.description }}</p>
+                            {% endif %}
+                            
+                            <div class="d-flex gap-3 text-muted small mb-4">
+                                <span>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ course.created_at.strftime('%d.%m.%Y') }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-list me-1"></i>
+                                    {{ course.modules|length }} modules
+                                </span>
+                                <span>
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ course.modules|map(attribute='lessons')|map('length')|sum }} lessons
+                                </span>
+                            </div>
+                            
+                            <div class="d-none d-sm-flex gap-2 mt-auto justify-content-end">
+                                {% if course.modules %}
+                                <button class="btn btn-primary" onclick="scrollToModules()">
+                                    <i class="fas fa-play me-2"></i>Start Learning
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модули и уроки -->
+    {% if course.modules %}
+    <div id="modules-section">
+        <h2 class="h3 mb-4">
+            <i class="fas fa-list me-2"></i>Course Program
+        </h2>
+        
+        <div class="accordion" id="modulesAccordion">
+            {% for module in course.modules %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="module{{ module.id }}">
+                    <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapse{{ module.id }}" 
+                            aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ module.id }}">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <span>
+                                <i class="fas fa-book me-2"></i>
+                                {{ module.title }}
+                            </span>
+                        </div>
+                    </button>
+                </h2>
+                <div id="collapse{{ module.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                     aria-labelledby="module{{ module.id }}" data-bs-parent="#modulesAccordion">
+                    <div class="accordion-body">
+                        {% if module.lessons %}
+                        <div class="list-group list-group-flush">
+                            {% for lesson in module.lessons %}
+                            <a href="{{ url_for('lesson_detail', course_id=course.id, lesson_id=lesson.id) }}" 
+                               class="list-group-item list-group-item-action d-flex align-items-center text-decoration-none">
+                                <i class="fas fa-play-circle text-primary me-3"></i>
+                                <h6 class="mb-0">{{ lesson.title }}</h6>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-3 text-muted">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No lessons in this module yet
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-info-circle text-muted" style="font-size: 3rem;"></i>
+        <h3 class="text-muted mt-3">Course program is under development</h3>
+        <p class="text-muted">
+            A detailed course program with modules and lessons will appear here soon.
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function scrollToModules() {
+    const modulesSection = document.getElementById('modules-section');
+    if (modulesSection) {
+        modulesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+</script>
+
+<style>
+/* Повышаем специфичность для перебивания стилей Bootstrap */
+#modulesAccordion .accordion-item {
+    border: 1px solid rgba(0,0,0,.125) !important;
+    margin-bottom: 0;
+}
+#modulesAccordion .accordion-item:not(:first-of-type) {
+    border-top: 1px solid rgba(0,0,0,.125) !important;
+}
+#modulesAccordion .accordion-item + .accordion-item {
+    margin-top: -1px;
+}
+#modulesAccordion .accordion-button {
+    background-color: #f8f9fa !important;
+    color: #007bff !important;
+    box-shadow: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+}
+
+#modulesAccordion .accordion-button:not(.collapsed) {
+    border-bottom: 1px solid rgba(0,0,0,.125) !important;
+}
+
+#modulesAccordion .accordion-button.collapsed {
+    border-bottom: none !important;
+}
+
+#modulesAccordion .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+#modulesAccordion .accordion-body {
+    padding:0 !important;
+}
+
+#modulesAccordion .list-group-item {
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 12px 20px;
+}
+
+#modulesAccordion .list-group-item:first-child {
+    border-top: none !important;
+}
+
+#modulesAccordion .list-group-item:last-child {
+    border-bottom: none !important;
+}
+
+#modulesAccordion .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+#modulesAccordion .list-group-item-action {
+    transition: background-color 0.2s ease;
+}
+.accordion-item:not(:first-of-type) {
+    border-top: 1px solid rgba(0,0,0,.125) !important;
+}
+.accordion-button {
+    background-color: #f8f9fa !important;
+    color: #007bff !important;
+    box-shadow: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+    border-bottom: 1px solid rgba(0,0,0,.125) !important;
+}
+
+/* Когда collapse показан, добавляем верхнюю границу к следующему элементу */
+.accordion-collapse.show .accordion-body + .accordion-item {
+    border-top: 1px solid rgba(0,0,0,.125) !important;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+.accordion-body {
+    padding: 0 !important;
+}
+
+.list-group-item {
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 12px 20px;
+}
+
+.list-group-item:first-child {
+    border-top: none !important;
+}
+
+.list-group-item:last-child {
+    border-bottom: none !important;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-item-action {
+    transition: background-color 0.2s ease;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #6c757d;
+}
+</style>
+{% endblock %}

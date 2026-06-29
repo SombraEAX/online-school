@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+{{ page_header('Dashboard', url_for('index'), [{'title': 'Dashboard', 'url': None}]) }}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3">User Information</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong><i class="fas fa-user me-2"></i>Username:</strong></td>
+                                <td>{{ user.username }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong><i class="fas fa-envelope me-2"></i>Email:</strong></td>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong><i class="fas fa-user-tag me-2"></i>Role:</strong></td>
+                                <td>
+                                    <span class="badge {% if user.role == 'admin' %}bg-danger{% else %}bg-primary{% endif %}">
+                                        {{ user.role.upper() }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong><i class="fas fa-calendar me-2"></i>Registration Date:</strong></td>
+                                <td>{{ user.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong><i class="fas fa-check-circle me-2"></i>Status:</strong></td>
+                                <td>
+                                    <span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5 class="text-success mb-3">Available Actions</h5>
+                        <div class="list-group">
+                            <a href="{{ url_for('courses') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-graduation-cap me-2"></i>View Courses
+                            </a>
+                            <a href="{{ url_for('change_password') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a>
+                            {% if user.is_admin() %}
+                            <a href="{{ url_for('admin') }}" class="list-group-item list-group-item-action">
+                                <i class="fas fa-cogs me-2"></i>Admin Panel
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action text-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-item">
+                            <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                            <h6>Days in system</h6>
+                            <p class="h4 text-primary">{{ (user.created_at.days | default(1)) }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-item">
+                            <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                            <h6>Access Level</h6>
+                            <p class="h4 text-success">{{ user.role.upper() }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-item">
+                            <i class="fas fa-check-circle fa-2x text-info mb-2"></i>
+                            <h6>Status</h6>
+                            <p class="h4 text-info">
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-item">
+                            <i class="fas fa-user fa-2x text-warning mb-2"></i>
+                            <h6>Account Type</h6>
+                            <p class="h4 text-warning">
+                                {% if user.is_admin() %}Admin{% else %}User{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-item {
+    padding: 1rem;
+}
+
+.stat-item i {
+    opacity: 0.8;
+}
+
+.stat-item:hover i {
+    opacity: 1;
+}
+</style>
+{% endblock %}

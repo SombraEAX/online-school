@@ -1,0 +1,498 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Edit Home Page{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {{ page_header('Home Page', url_for('admin'), [{'title': 'Dashboard', 'url': url_for('dashboard')}, {'title': 'Admin Panel', 'url': url_for('admin')}, {'title': 'Home Page', 'url': None}]) }}
+
+    <div class="row">
+        <div class="col-12">
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Home Page Settings</h4>
+                            <form method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="header_title" class="form-label">Title *</label>
+                                    <input type="text" class="form-control" id="header_title" name="header_title"
+                                           value="{{ (home_landing.header_title if home_landing else 'Welcome') or 'Welcome' }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="header_subtitle" class="form-label">Subtitle</label>
+                                    <textarea class="form-control" id="header_subtitle" name="header_subtitle" rows="3">{{ (home_landing.header_subtitle if home_landing else '') or '' }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="header_background_image" class="form-label">Background Image</label>
+                                    <input type="file" class="form-control" id="header_background_image" name="header_background_image" accept="image/*">
+                                    {% if home_landing and home_landing.header_background_image %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">Current image:</small><br>
+                                        <img src="{{ url_for('static', filename='uploads/' + home_landing.header_background_image) }}"
+                                             alt="Background" style="max-height: 100px; border-radius: 4px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="header_call_to_action" class="form-label">Call to Action</label>
+                                    <textarea class="form-control" id="header_call_to_action" name="header_call_to_action" rows="2">{{ (home_landing.header_call_to_action if home_landing else '') or '' }}</textarea>
+                                </div>
+                                <hr class="my-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Our Advantages</label>
+                                    <div class="mb-2">
+                                        <label for="features_section_title" class="form-label small text-muted">Section Title</label>
+                                        <input type="text" class="form-control" id="features_section_title" name="features_section_title"
+                                               value="{{ (home_landing.features_section_title if home_landing else 'Our Advantages') or 'Our Advantages' }}">
+                                    </div>
+                                    <div id="features-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-success mt-2" id="add-feature-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Advantage
+                                    </button>
+                                    <input type="hidden" id="features" name="features">
+                                </div>
+                                <hr class="my-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Numbers and Facts</label>
+                                    <div class="mb-2">
+                                        <label for="stats_section_title" class="form-label small text-muted">Section Title</label>
+                                        <input type="text" class="form-control" id="stats_section_title" name="stats_section_title"
+                                               value="{{ (home_landing.stats_section_title if home_landing else 'Numbers and Facts') or 'Numbers and Facts' }}">
+                                    </div>
+                                    <div id="stats-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-success mt-2" id="add-stats-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Statistic
+                                    </button>
+                                    <input type="hidden" id="stats" name="stats">
+                                </div>
+                                <hr class="my-4">
+                                <div class="mb-3">
+                                    <label class="form-label">About Our School</label>
+                                    <div class="mb-2">
+                                        <label for="about_section_title" class="form-label small text-muted">Section Title</label>
+                                        <input type="text" class="form-control" id="about_section_title" name="about_section_title"
+                                               value="{{ (home_landing.about_section_title if home_landing else 'About Our School') or 'About Our School' }}">
+                                    </div>
+                                    <div id="about-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-success mt-2" id="add-about-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Block
+                                    </button>
+                                    <input type="hidden" id="about_text" name="about_text">
+                                </div>
+                                <hr class="my-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Frequently Asked Questions</label>
+                                    <div class="mb-2">
+                                        <label for="faq_section_title" class="form-label small text-muted">Section Title</label>
+                                        <input type="text" class="form-control" id="faq_section_title" name="faq_section_title"
+                                               value="{{ (home_landing.faq_section_title if home_landing else 'Frequently Asked Questions') or 'Frequently Asked Questions' }}">
+                                    </div>
+                                    <div id="faq-container"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-success mt-2" id="add-faq-btn">
+                                        <i class="fas fa-plus me-1"></i>Add Question
+                                    </button>
+                                    <input type="hidden" id="faq" name="faq">
+                                </div>
+                                <hr class="my-4">
+                                <div class="mb-3">
+                                    <h5 class="mb-3"><i class="fas fa-bullhorn me-2"></i>Call to Action Block</h5>
+                                    <div class="mb-3">
+                                        <label for="cta_title" class="form-label">Title</label>
+                                        <input type="text" class="form-control" id="cta_title" name="cta_title"
+                                               value="{{ (home_landing.cta_title if home_landing else '') or '' }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cta_text" class="form-label">Text</label>
+                                        <textarea class="form-control" id="cta_text" name="cta_text" rows="3">{{ (home_landing.cta_text if home_landing else '') or '' }}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cta_image" class="form-label">Image</label>
+                                        <input type="file" class="form-control" id="cta_image" name="cta_image" accept="image/*">
+                                        {% if home_landing and home_landing.cta_image %}
+                                        <div class="mt-2">
+                                        <small class="text-muted">Current image:</small><br>
+                                            <img src="{{ url_for('static', filename='uploads/' + home_landing.cta_image) }}"
+                                                 alt="CTA" style="max-height: 150px; border-radius: 8px;">
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <hr class="my-4">
+                                <div class="mb-3">
+                                    <h5 class="mb-3"><i class="fas fa-robot me-2"></i>Chat Bot</h5>
+                                    <div class="mb-3">
+                                        <label for="chatbot_cta_text" class="form-label">Call to Action Text</label>
+                                        <textarea class="form-control" id="chatbot_cta_text" name="chatbot_cta_text" rows="2">{{ (home_landing.chatbot_cta_text if home_landing else '') or '' }}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="chatbot_button_text" class="form-label">Button Text</label>
+                                        <input type="text" class="form-control" id="chatbot_button_text" name="chatbot_button_text"
+                                               value="{{ (home_landing.chatbot_button_text if home_landing else 'Chat Bot') or 'Chat Bot' }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="chatbot_button_url" class="form-label">Link (URL)</label>
+                                        <input type="url" class="form-control" id="chatbot_button_url" name="chatbot_button_url"
+                                                value="{{ (home_landing.chatbot_button_url if home_landing else '') or '' }}"
+                                               placeholder="https://t.me/your_bot">
+                                        <div class="form-text">External link to chat bot (Telegram, WhatsApp, etc.)</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                                                {% if home_landing and home_landing.is_active %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_active">Active</label>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-save me-2"></i>Save
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Preview</h4>
+                            <div class="ratio ratio-16x9 border rounded overflow-hidden">
+                                <iframe src="{{ url_for('index') }}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('index') }}" target="_blank" class="btn btn-outline-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>Open in new tab
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Features management
+const featuresContainer = document.getElementById('features-container');
+const featuresInput = document.getElementById('features');
+const addFeatureBtn = document.getElementById('add-feature-btn');
+
+const featureIconOptions = [
+    { value: 'fas fa-check-circle', label: 'Checkmark' },
+    { value: 'fas fa-star', label: 'Star' },
+    { value: 'fas fa-rocket', label: 'Rocket' },
+    { value: 'fas fa-shield-alt', label: 'Shield' },
+    { value: 'fas fa-users', label: 'Team' },
+    { value: 'fas fa-clock', label: 'Time' },
+    { value: 'fas fa-heart', label: 'Heart' },
+    { value: 'fas fa-graduation-cap', label: 'Learning' },
+    { value: 'fas fa-certificate', label: 'Certificate' },
+    { value: 'fas fa-headset', label: 'Support' },
+];
+
+let featuresItems = [];
+const existingFeatures = `{{ home_landing.features | default('[]') | safe }}`;
+try {
+    const parsed = JSON.parse(existingFeatures);
+    if (Array.isArray(parsed)) featuresItems = parsed;
+} catch (e) { featuresItems = []; }
+
+function createFeatureCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'feature-item card mb-2 p-3';
+    card.dataset.index = index;
+    const iconOptionsHtml = featureIconOptions.map(opt =>
+        `<option value="${opt.value}" ${item.image === opt.value ? 'selected' : ''}>${opt.label}</option>`
+    ).join('');
+    card.innerHTML = `
+        <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-sm feature-icon" style="width: 180px;">
+                    <option value="">Select icon</option>
+                    ${iconOptionsHtml}
+                </select>
+                <input type="text" class="form-control form-control-sm feature-title" placeholder="Title" value="${item.title || ''}">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-feature-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <textarea class="form-control form-control-sm feature-description" rows="2" placeholder="Description">${item.description || ''}</textarea>
+        </div>`;
+    return card;
+}
+
+function renderFeaturesItems() {
+    featuresContainer.innerHTML = '';
+    featuresItems.forEach((item, index) => {
+        featuresContainer.appendChild(createFeatureCard(item, index));
+    });
+}
+
+function updateFeaturesInput() { featuresInput.value = JSON.stringify(featuresItems); }
+
+function syncFeaturesFromUI() {
+    featuresItems = [];
+    featuresContainer.querySelectorAll('.feature-item').forEach(card => {
+        const icon = card.querySelector('.feature-icon').value;
+        const title = card.querySelector('.feature-title').value;
+        const description = card.querySelector('.feature-description').value;
+        if (title || icon || description) featuresItems.push({ image: icon, title: title, description: description });
+    });
+    updateFeaturesInput();
+}
+
+addFeatureBtn.addEventListener('click', () => {
+    featuresItems.push({ image: '', title: '', description: '' });
+    renderFeaturesItems();
+    updateFeaturesInput();
+});
+
+featuresContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-feature-btn')) {
+        const index = parseInt(e.target.closest('.feature-item').dataset.index);
+        featuresItems.splice(index, 1);
+        renderFeaturesItems();
+        updateFeaturesInput();
+    }
+});
+
+featuresContainer.addEventListener('input', syncFeaturesFromUI);
+featuresContainer.addEventListener('change', syncFeaturesFromUI);
+renderFeaturesItems();
+updateFeaturesInput();
+
+// Stats management
+const statsContainer = document.getElementById('stats-container');
+const statsInput = document.getElementById('stats');
+const addStatsBtn = document.getElementById('add-stats-btn');
+
+const statsIconOptions = [
+    { value: 'fas fa-user-graduate', label: 'Students' },
+    { value: 'fas fa-chalkboard-teacher', label: 'Teachers' },
+    { value: 'fas fa-book', label: 'Courses' },
+    { value: 'fas fa-clock', label: 'Learning Hours' },
+    { value: 'fas fa-certificate', label: 'Certificates' },
+    { value: 'fas fa-globe', label: 'Countries' },
+    { value: 'fas fa-star', label: 'Rating' },
+    { value: 'fas fa-chart-line', label: 'Growth' },
+];
+
+let statsItems = [];
+const existingStats = `{{ home_landing.stats | default('[]') | safe }}`;
+try {
+    const parsed = JSON.parse(existingStats);
+    if (Array.isArray(parsed)) statsItems = parsed;
+} catch (e) { statsItems = []; }
+
+function createStatsCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'stats-item card mb-2 p-3';
+    card.dataset.index = index;
+    const iconOptionsHtml = statsIconOptions.map(opt =>
+        `<option value="${opt.value}" ${item.icon === opt.value ? 'selected' : ''}>${opt.label}</option>`
+    ).join('');
+    card.innerHTML = `
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <select class="form-select form-select-sm stats-icon" style="width: 180px;">
+                <option value="">Select icon</option>
+                ${iconOptionsHtml}
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-stats-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <input type="text" class="form-control form-control-sm stats-label mb-2" placeholder="Label" value="${item.label || ''}">
+        <input type="text" class="form-control form-control-sm stats-value" placeholder="Value" value="${item.value || ''}">`;
+    return card;
+}
+
+function renderStatsItems() {
+    statsContainer.innerHTML = '';
+    statsItems.forEach((item, index) => {
+        statsContainer.appendChild(createStatsCard(item, index));
+    });
+}
+
+function updateStatsInput() { statsInput.value = JSON.stringify(statsItems); }
+
+function syncStatsFromUI() {
+    statsItems = [];
+    statsContainer.querySelectorAll('.stats-item').forEach(card => {
+        const icon = card.querySelector('.stats-icon').value;
+        const label = card.querySelector('.stats-label').value;
+        const value = card.querySelector('.stats-value').value;
+        if (label || value || icon) statsItems.push({ icon: icon, label: label, value: value });
+    });
+    updateStatsInput();
+}
+
+addStatsBtn.addEventListener('click', () => {
+    statsItems.push({ icon: '', label: '', value: '' });
+    renderStatsItems();
+    updateStatsInput();
+});
+
+statsContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-stats-btn')) {
+        const index = parseInt(e.target.closest('.stats-item').dataset.index);
+        statsItems.splice(index, 1);
+        renderStatsItems();
+        updateStatsInput();
+    }
+});
+
+statsContainer.addEventListener('input', syncStatsFromUI);
+statsContainer.addEventListener('change', syncStatsFromUI);
+renderStatsItems();
+updateStatsInput();
+
+// About management
+const aboutContainer = document.getElementById('about-container');
+const aboutInput = document.getElementById('about_text');
+const addAboutBtn = document.getElementById('add-about-btn');
+
+let aboutItems = [];
+const existingAbout = `{{ home_landing.about_text | default('[]') | safe }}`;
+try {
+    const parsed = JSON.parse(existingAbout);
+    if (Array.isArray(parsed)) aboutItems = parsed;
+} catch (e) { aboutItems = []; }
+
+function createAboutCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'about-item card mb-2 p-3';
+    card.dataset.index = index;
+    card.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-primary">Block ${index + 1}</span>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-about-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <input type="text" class="form-control form-control-sm about-title mb-2" placeholder="Title" value="${item.title || ''}">
+        <textarea class="form-control form-control-sm about-description" rows="3" placeholder="Description">${item.description || ''}</textarea>`;
+    return card;
+}
+
+function renderAboutItems() {
+    aboutContainer.innerHTML = '';
+    aboutItems.forEach((item, index) => {
+        aboutContainer.appendChild(createAboutCard(item, index));
+    });
+}
+
+function updateAboutInput() { aboutInput.value = JSON.stringify(aboutItems); }
+
+function syncAboutFromUI() {
+    aboutItems = [];
+    aboutContainer.querySelectorAll('.about-item').forEach(card => {
+        const title = card.querySelector('.about-title').value;
+        const description = card.querySelector('.about-description').value;
+        if (title || description) aboutItems.push({ title: title, description: description });
+    });
+    updateAboutInput();
+}
+
+addAboutBtn.addEventListener('click', () => {
+    aboutItems.push({ title: '', description: '' });
+    renderAboutItems();
+    updateAboutInput();
+});
+
+aboutContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-about-btn')) {
+        const index = parseInt(e.target.closest('.about-item').dataset.index);
+        aboutItems.splice(index, 1);
+        renderAboutItems();
+        updateAboutInput();
+    }
+});
+
+aboutContainer.addEventListener('input', syncAboutFromUI);
+aboutContainer.addEventListener('change', syncAboutFromUI);
+renderAboutItems();
+updateAboutInput();
+
+// FAQ management
+const faqContainer = document.getElementById('faq-container');
+const faqInput = document.getElementById('faq');
+const addFaqBtn = document.getElementById('add-faq-btn');
+
+let faqItems = [];
+const existingFaq = `{{ home_landing.faq | default('[]') | safe }}`;
+try {
+    const parsed = JSON.parse(existingFaq);
+    if (Array.isArray(parsed)) faqItems = parsed;
+} catch (e) { faqItems = []; }
+
+function createFaqCard(item, index) {
+    const card = document.createElement('div');
+    card.className = 'faq-item card mb-2 p-3';
+    card.dataset.index = index;
+    card.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-info">Question ${index + 1}</span>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-faq-btn">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <input type="text" class="form-control form-control-sm faq-question mb-2" placeholder="Question" value="${item.question || ''}">
+        <textarea class="form-control form-control-sm faq-answer" rows="3" placeholder="Answer">${item.answer || ''}</textarea>`;
+    return card;
+}
+
+function renderFaqItems() {
+    faqContainer.innerHTML = '';
+    faqItems.forEach((item, index) => {
+        faqContainer.appendChild(createFaqCard(item, index));
+    });
+}
+
+function updateFaqInput() { faqInput.value = JSON.stringify(faqItems); }
+
+function syncFaqFromUI() {
+    faqItems = [];
+    faqContainer.querySelectorAll('.faq-item').forEach(card => {
+        const question = card.querySelector('.faq-question').value;
+        const answer = card.querySelector('.faq-answer').value;
+        if (question || answer) faqItems.push({ question: question, answer: answer });
+    });
+    updateFaqInput();
+}
+
+addFaqBtn.addEventListener('click', () => {
+    faqItems.push({ question: '', answer: '' });
+    renderFaqItems();
+    updateFaqInput();
+});
+
+faqContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-faq-btn')) {
+        const index = parseInt(e.target.closest('.faq-item').dataset.index);
+        faqItems.splice(index, 1);
+        renderFaqItems();
+        updateFaqInput();
+    }
+});
+
+faqContainer.addEventListener('input', syncFaqFromUI);
+faqContainer.addEventListener('change', syncFaqFromUI);
+renderFaqItems();
+updateFaqInput();
+</script>
+
+<style>
+.breadcrumb { background: transparent; padding: 0; }
+.breadcrumb-item + .breadcrumb-item::before { content: ">"; color: #6c757d; }
+.ratio { background: #f8f9fa; }
+.card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+.feature-item, .stats-item, .about-item, .faq-item { background: #fff; border: 1px solid #dee2e6; }
+.feature-item:hover, .stats-item:hover, .about-item:hover, .faq-item:hover { transform: none; box-shadow: none; }
+</style>
+{% endblock %}

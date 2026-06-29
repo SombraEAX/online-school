@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Course Management{% endblock %}
+
+{% block content %}
+{{ page_header('Course Management', url_for('admin'), [{'title': 'Dashboard', 'url': url_for('dashboard')}, {'title': 'Admin Panel', 'url': url_for('admin')}, {'title': 'Courses', 'url': None}], url_for('create_course'), 'Create Course') }}
+
+<div class="row">
+    {% for course in courses %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm d-flex flex-column">
+            {% if course.image %}
+            <img src="{{ url_for('static', filename='uploads/' + course.image) }}" 
+                 class="card-img-top" alt="{{ course.title }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                 style="height: 200px;">
+                <i class="fas fa-image fa-3x text-muted"></i>
+            </div>
+            {% endif %}
+            
+            <div class="card-body flex-grow-1 d-flex flex-column">
+                <h5 class="card-title">{{ course.title }}</h5>
+                <p class="card-text text-muted small">
+                    {% if course.description %}
+                        {{ course.description[:100] }}{% if course.description|length > 100 %}...{% endif %}
+                    {% else %}
+                        No description
+                    {% endif %}
+                </p>
+                
+                <div class="mb-2">
+                    {% if course.price %}
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-tag me-1"></i>{{ "%.2f"|format(course.price) }} $
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary fs-6">
+                            <i class="fas fa-gift me-1"></i>Free
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        {{ course.created_at.strftime('%d.%m.%Y') }}
+                    </small>
+                    <div class="d-flex gap-1">
+                        <span class="badge {% if course.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if course.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                        <span class="badge {% if course.published %}bg-primary{% else %}bg-warning text-dark{% endif %}">
+                            {% if course.published %}Published{% else %}Draft{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer bg-transparent mt-auto">
+                <a href="{{ url_for('admin_modules', course_id=course.id) }}" 
+                   class="btn btn-primary w-100">
+                    <i class="fas fa-cog me-1"></i>Course Settings
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="fas fa-graduation-cap fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted">No courses found</h5>
+            <p class="text-muted">Create your first course to start learning</p>
+            <a href="{{ url_for('create_course') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create First Course
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="mt-4">
+    <div class="alert alert-info">
+        <h6><i class="fas fa-info-circle me-2"></i>Course Information:</h6>
+        <ul class="mb-0">
+            <li>Each course can contain multiple modules</li>
+            <li>Modules consist of individual lessons with text content</li>
+            <li>You can upload an image for each course</li>
+            <li>Deleting a course will also delete all related modules and lessons</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

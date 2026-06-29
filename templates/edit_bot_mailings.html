@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Mailing{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {{ page_header('Mailing', url_for('admin'), breadcrumbs) }}
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-users me-2"></i>Recipients: <strong>{{ users_count }}</strong>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="mailing_text" class="form-label">
+                                <i class="fas fa-comment me-1"></i>Message
+                            </label>
+                            <div class="btn-group-sm mb-2" role="group">
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('<b>', '</b>')" title="Bold">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="wrapText('<i>', '</i>')" title="Italic">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#linkModal" title="Link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                            <textarea class="form-control" id="mailing_text" name="mailing_text" rows="6" required placeholder="Enter mailing text..."></textarea>
+                            <div class="form-text">HTML markup is supported</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="mailing_media" class="form-label">
+                                <i class="fas fa-paperclip me-1"></i>Attachment (optional)
+                            </label>
+                            <input type="file" class="form-control" id="mailing_media" name="mailing_media" accept="image/*,video/*">
+                            <div class="form-text">Supported formats: JPG, PNG, GIF, WEBP, MP4, AVI, MOV, MKV</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="disable_link_preview" name="disable_link_preview">
+                                <label class="form-check-label" for="disable_link_preview">
+                                    <i class="fas fa-eye-slash me-1"></i>Disable link preview
+                                </label>
+                                <div class="form-text">Links in the message will not display as preview cards</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Send Mailing
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка для добавления ссылки -->
+<div class="modal fade" id="linkModal" tabindex="-1" aria-labelledby="linkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="linkModalLabel">Add Link</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="linkUrl" class="form-label">Link URL</label>
+                    <input type="text" class="form-control" id="linkUrl" placeholder="https://example.com">
+                </div>
+                <div class="mb-3">
+                    <label for="linkText" class="form-label">Link Text</label>
+                    <input type="text" class="form-control" id="linkText" placeholder="Link text">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="insertLinkFromModal()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function wrapText(before, after) {
+    const textarea = document.getElementById('mailing_text');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.substring(start, end);
+    const text = textarea.value;
+    textarea.value = text.substring(0, start) + before + selected + after + text.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + before.length, end + before.length);
+}
+
+function wrapLink() {
+    const textarea = document.getElementById('mailing_text');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentSelection = textarea.value.substring(start, end);
+    
+    document.getElementById('linkText').value = currentSelection;
+    document.getElementById('linkUrl').value = '';
+}
+
+function insertLinkFromModal() {
+    const textarea = document.getElementById('mailing_text');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    
+    const url = document.getElementById('linkUrl').value;
+    const linkText = document.getElementById('linkText').value;
+    
+    if (url && linkText) {
+        const link = '<a href="' + url + '">' + linkText + '</a>';
+        textarea.value = text.substring(0, start) + link + text.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + link.length, start + link.length);
+        
+        // Закрываем модалку
+        const modal = bootstrap.Modal.getInstance(document.getElementById('linkModal'));
+        modal.hide();
+        
+        // Очищаем поля
+        document.getElementById('linkUrl').value = '';
+        document.getElementById('linkText').value = '';
+    }
+}
+
+// Обработка Enter в полях модалки
+document.getElementById('linkUrl').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        insertLinkFromModal();
+    }
+});
+
+document.getElementById('linkText').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        insertLinkFromModal();
+    }
+});
+
+// Фокус на первое поле при открытии модалки
+document.getElementById('linkModal').addEventListener('shown.bs.modal', function() {
+    document.getElementById('linkUrl').focus();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ home_landing.header_title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: {{ theme.primary_color if theme else '#007bff' }};
+            --secondary: {{ theme.secondary_color if theme else '#0056b3' }};
+            --text: {{ theme.text_color if theme else '#666666' }};
+            --bg: {{ theme.bg_color if theme else '#f8f9fa' }};
+            --heading: {{ theme.heading_color if theme else '#333333' }};
+            --accent: {{ theme.accent_color if theme else '#ffc107' }};
+            --btn: {{ theme.button_color if theme else '#007bff' }};
+            --btn-text: {{ theme.button_text_color if theme else '#ffffff' }};
+        }
+
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+            z-index: 1;
+        }
+        .hero-background {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--btn);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 3px solid var(--btn);
+        }
+        .cta-button:hover {
+            background: transparent;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .features-section { background: var(--bg); }
+        .feature-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 2px solid transparent;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: var(--btn);
+        }
+        .feature-icon { margin-bottom: 1.5rem; color: var(--btn); }
+        .feature-title { font-size: 1.2rem; font-weight: 600; color: var(--heading); }
+        .feature-description { font-size: 0.9rem; color: var(--text); line-height: 1.6; }
+        .stats-section {
+            background: linear-gradient(135deg, var(--btn), var(--secondary));
+            color: white;
+        }
+        .stat-card {
+            padding: 30px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+        .stat-value { font-size: 2.5rem; font-weight: 700; }
+        .stat-label { font-size: 1rem; opacity: 0.9; }
+        .about-section { background: #fff; }
+        .about-item {
+            padding: 15px 20px 10px 20px;
+            background: var(--bg);
+            border-radius: 10px;
+            border: 2px solid var(--btn);
+            margin-bottom: 15px;
+        }
+        .about-title { font-size: 1.3rem; font-weight: 600; color: var(--heading); margin-bottom: 10px; }
+        .about-description { font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 0; }
+        .courses-section { background: var(--bg); }
+        .course-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .faq-section { background: #fff; }
+        .accordion-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 0 !important;
+            margin-bottom: 0;
+            overflow: hidden;
+        }
+        .accordion-item:first-of-type {
+            border-radius: 8px 8px 0 0 !important;
+        }
+        .accordion-item:last-of-type {
+            border-radius: 0 0 8px 8px !important;
+        }
+        .accordion-item:only-of-type {
+            border-radius: 8px !important;
+        }
+        .accordion-item:not(:first-of-type) {
+            border-top: 1px solid #e0e0e0 !important;
+            margin-top: -1px;
+        }
+        .accordion-button {
+            background: #fff;
+            color: var(--heading);
+            font-weight: 600;
+            padding: 18px 25px;
+            box-shadow: none !important;
+        }
+        .accordion-button:not(.collapsed) {
+            background: var(--btn);
+            color: #fff;
+        }
+        .accordion-body {
+            padding: 20px 25px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text);
+        }
+        .cta-section {
+            background: linear-gradient(135deg, var(--btn), var(--secondary));
+            color: white;
+            padding: 5rem 0;
+        }
+        .cta-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .cta-text { font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem; opacity: 0.9; }
+        .cta-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: var(--btn);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-bottom: 100px;
+            border: 3px solid white;
+        }
+        .cta-btn:hover {
+            background: transparent;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .chatbot-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: transparent;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+        }
+        .chatbot-btn:hover {
+            background: white;
+            color: var(--btn);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .chatbot-section {
+            background: linear-gradient(135deg, var(--btn), var(--secondary));
+            color: white;
+        }
+        .chatbot-cta-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .cta-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-section">
+        {% if home_landing.header_background_image %}
+        <img src="{{ url_for('static', filename='uploads/' + home_landing.header_background_image) }}"
+             alt="{{ home_landing.header_title }}" class="hero-background">
+        {% endif %}
+        <div class="hero-content">
+            <h1 class="hero-title">{{ home_landing.header_title }}</h1>
+            {% if home_landing.header_subtitle %}
+            <p class="hero-subtitle">{{ home_landing.header_subtitle | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+            {% if home_landing.header_call_to_action %}
+            <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">{{ home_landing.header_call_to_action | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+            <a href="{{ url_for('courses') }}" class="cta-button">View Courses</a>
+        </div>
+    </section>
+
+    {% if home_landing.chatbot_button_text and home_landing.chatbot_button_url %}
+    <section class="chatbot-section py-5">
+        <div class="container text-center">
+            {% if home_landing.chatbot_cta_text %}
+            <p class="chatbot-cta-text">{{ home_landing.chatbot_cta_text | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+            <a href="{{ home_landing.chatbot_button_url }}" class="chatbot-btn" target="_blank" rel="noopener">
+                <i class="fas fa-robot me-2"></i>{{ home_landing.chatbot_button_text }}
+            </a>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if home_landing.features %}
+    {% set feature_items = home_landing.features | from_json %}
+    {% if feature_items %}
+    <section class="features-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">{{ home_landing.features_section_title or 'Our Advantages' }}</h2>
+            <div class="row justify-content-center">
+                {% for item in feature_items %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="{{ item.image or 'fas fa-star' }} fa-3x"></i>
+                        </div>
+                        <h4 class="feature-title">{{ item.title }}</h4>
+                        {% if item.description %}
+                        <p class="feature-description">{{ item.description | replace('\n', '<br>') | safe }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    {% if home_landing.stats %}
+    {% set stats_items = home_landing.stats | from_json %}
+    {% if stats_items %}
+    <section class="stats-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">{{ home_landing.stats_section_title or 'Numbers and Facts' }}</h2>
+            <div class="row justify-content-center text-center">
+                {% for item in stats_items %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div style="margin-bottom: 1rem; font-size: 2rem;">
+                            <i class="{{ item.icon or 'fas fa-chart-bar' }}"></i>
+                        </div>
+                        <div class="stat-value">{{ item.value }}</div>
+                        <div class="stat-label">{{ item.label }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    {% if home_landing.about_text %}
+    {% set about_items = home_landing.about_text | from_json %}
+    {% if about_items %}
+    <section class="about-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">{{ home_landing.about_section_title or 'About Our School' }}</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    {% for item in about_items %}
+                    <div class="about-item">
+                        {% if item.title %}
+                        <h4 class="about-title">{{ item.title }}</h4>
+                        {% endif %}
+                        {% if item.description %}
+                        <p class="about-description">{{ item.description | replace('\n', '<br>') | safe }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    {% if home_landing.faq %}
+    {% set faq_items = home_landing.faq | from_json %}
+    {% if faq_items %}
+    <section class="faq-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">{{ home_landing.faq_section_title or 'Frequently Asked Questions' }}</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion" id="faqAccordion">
+                        {% for item in faq_items %}
+                        <div class="accordion-item">
+                            <h3 class="accordion-header" id="faqHeading{{ loop.index }}">
+                                <button class="accordion-button {{ 'collapsed' if not loop.first else '' }}" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ loop.index }}"
+                                        aria-expanded="{{ 'true' if loop.first else 'false' }}"
+                                        aria-controls="faqCollapse{{ loop.index }}">
+                                    {{ item.question }}
+                                </button>
+                            </h3>
+                            <div id="faqCollapse{{ loop.index }}" class="accordion-collapse collapse {{ 'show' if loop.first else '' }}"
+                                 aria-labelledby="faqHeading{{ loop.index }}" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">{{ item.answer | replace('\n', '<br>') | safe }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    {% if home_landing.chatbot_button_text and home_landing.chatbot_button_url %}
+    <section class="chatbot-section py-5">
+        <div class="container text-center">
+            {% if home_landing.chatbot_cta_text %}
+            <p class="chatbot-cta-text">{{ home_landing.chatbot_cta_text | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+            <a href="{{ home_landing.chatbot_button_url }}" class="chatbot-btn" target="_blank" rel="noopener">
+                <i class="fas fa-robot me-2"></i>{{ home_landing.chatbot_button_text }}
+            </a>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if home_landing.cta_title or home_landing.cta_text %}
+    <section class="cta-section">
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-lg-8 text-center">
+                    <div>
+                        {% if home_landing.cta_title %}
+                        <h2 class="cta-title">{{ home_landing.cta_title }}</h2>
+                        {% endif %}
+                        {% if home_landing.cta_text %}
+                        <p class="cta-text">{{ home_landing.cta_text | replace('\n', '<br>') | safe }}</p>
+                        {% endif %}
+                        <a href="{{ url_for('courses') }}" class="cta-btn">View Courses</a>
+                    </div>
+                </div>
+                {% if home_landing.cta_image %}
+                <div class="col-lg-6">
+                    <div style="border-radius: 15px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.3);">
+                        <img src="{{ url_for('static', filename='uploads/' + home_landing.cta_image) }}"
+                             alt="{{ home_landing.cta_title }}" style="width: 100%; height: auto; display: block;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

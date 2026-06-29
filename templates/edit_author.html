@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Edit Course Author{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {{ page_header('Course Author', url_for('admin'), [{'title': 'Dashboard', 'url': url_for('dashboard')}, {'title': 'Admin Panel', 'url': url_for('admin')}, {'title': 'Course Author', 'url': None}]) }}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ author.name if author else '' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Position / Specialization</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   value="{{ author.title if author else '' }}" 
+                                    placeholder="e.g. Web Development Expert">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="5" 
+                                      placeholder="Tell about the course author">{{ author.bio if author else '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="author_image" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="author_image" name="author_image" accept="image/*">
+                            {% if author and author.image %}
+                            <div class="mt-2">
+                                <small class="text-muted">Current photo:</small><br>
+                                 <img src="{{ url_for('static', filename='uploads/' + author.image) }}" 
+                                      alt="Author" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%; margin-top: 10px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #6c757d;
+}
+</style>
+{% endblock %}

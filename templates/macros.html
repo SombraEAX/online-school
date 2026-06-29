@@ -1,0 +1,95 @@
+{% macro render_article(article, level=0) %}
+<div class="list-group-item" style="padding-left: {{ 15 + level * 30 }}px;">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="mb-0" style="font-size: 0.95rem;">
+                <i class="fas fa-file-alt me-2"></i>{{ article.title }}
+                {% if article.files %}
+                <span class="badge bg-secondary">{{ article.files|length }} files</span>
+                {% endif %}
+            </h5>
+        </div>
+        <div>
+            <a href="{{ url_for('edit_article', article_id=article.id) }}" 
+               class="btn btn-sm btn-primary">
+                <i class="fas fa-edit"></i>
+            </a>
+            <button type="button" class="btn btn-sm btn-danger" onclick="showDeleteModal({{ article.id }}, '{{ article.title|escape }}')">
+                <i class="fas fa-trash"></i>
+            </button>
+            <form id="delete-form-{{ article.id }}" method="POST" action="{{ url_for('delete_article', article_id=article.id) }}" 
+                  class="d-none">
+            </form>
+        </div>
+    </div>
+</div>
+{% if article.children %}
+{% for child in article.children %}
+{{ render_article(child, level + 1) }}
+{% endfor %}
+{% endif %}
+{% endmacro %}
+
+{% macro render_option(article, current_article_id=None, current_parent_id=None, level=0, disabled_ids=[]) %}
+<option value="{{ article.id }}" {% if article.id in disabled_ids %}disabled{% elif article.id == current_article_id %}disabled{% elif article.id == current_parent_id %}selected{% endif %}>{% for i in range(level) %}··{% endfor %}{% if level > 0 %}→ {% endif %}{{ article.title }}{% if article.id == current_article_id %} (current){% endif %}</option>
+{% for child in article.children %}
+{{ render_option(child, current_article_id, current_parent_id, level + 1, disabled_ids) }}
+{% endfor %}
+{% endmacro %}
+
+{% macro page_header(title, back_url, breadcrumbs=[], add_url=None, add_text=None, add_onclick=None) %}
+<div class="page-header mb-3">
+    <!-- Desktop: title + breadcrumbs + optional button -->
+    <div class="d-none d-md-flex justify-content-between align-items-start">
+        <div>
+            <h2 class="mb-2">{{ title }}</h2>
+            {% if breadcrumbs %}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    {% for crumb in breadcrumbs %}
+                    <li class="breadcrumb-item {% if loop.last %}active{% endif %}">
+                        {% if not loop.last and crumb.url %}
+                        <a href="{{ crumb.url }}">{{ crumb.title }}</a>
+                        {% else %}
+                        {{ crumb.title }}
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ol>
+            </nav>
+            {% endif %}
+        </div>
+        {% if add_text %}
+        {% if add_onclick %}
+        <button onclick="{{ add_onclick }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>{{ add_text }}
+        </button>
+        {% else %}
+        <a href="{{ add_url }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>{{ add_text }}
+        </a>
+        {% endif %}
+        {% endif %}
+    </div>
+    <!-- Mobile: back arrow + title + optional round button -->
+    <div class="d-md-none d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <a href="{{ back_url }}" class="btn btn-link text-decoration-none p-0 me-2" title="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h2 class="mb-0">{{ title }}</h2>
+        </div>
+        {% if add_text %}
+        {% if add_onclick %}
+        <button onclick="{{ add_onclick }}" class="btn btn-primary rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-plus"></i>
+        </button>
+        {% else %}
+        <a href="{{ add_url }}" class="btn btn-primary rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-plus"></i>
+        </a>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}

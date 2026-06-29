@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Site Settings{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {{ page_header('Site Settings', url_for('admin'), [{'title': 'Dashboard', 'url': url_for('dashboard')}, {'title': 'Admin Panel', 'url': url_for('admin')}, {'title': 'Site Settings', 'url': None}]) }}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="site_name" class="form-label">Site Name *</label>
+                            <input type="text" class="form-control" id="site_name" name="site_name" 
+                                   value="{{ site.site_name if site else '' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="site_description" class="form-label">Site Description</label>
+                            <textarea class="form-control" id="site_description" name="site_description" rows="3" 
+                                      placeholder="Brief site description for search engines">{{ site.site_description if site else '' }}</textarea>
+                            <small class="text-muted">Used in meta tags and SEO</small>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #6c757d;
+}
+</style>
+{% endblock %}

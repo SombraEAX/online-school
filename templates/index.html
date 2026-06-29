@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto text-center">
+        <div class="hero-section">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-rocket text-primary me-3"></i>
+                Welcome to our system!
+            </h1>
+            <p class="lead mb-4">
+                This web application has a registration system, authentication and role-based access. Register or login to access your dashboard.
+            </p>
+            
+            <div class="row mt-5">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Users</h5>
+                            <p class="card-text">
+                                Get access to your dashboard with personalized content
+                            </p>
+                            <a href="{{ url_for('register') }}" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-sign-in-alt fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Login</h5>
+                            <p class="card-text">
+                                Log in to your account to access system features
+                            </p>
+                            <a href="{{ url_for('login') }}" class="btn btn-success">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5">
+                <h3 class="mb-3">System Features</h3>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt fa-2x text-warning mb-2"></i>
+                            <h5>Security</h5>
+                            <p>Reliable data protection</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="feature-item">
+                            <i class="fas fa-users fa-2x text-info mb-2"></i>
+                            <h5>Access Roles</h5>
+                            <p>Admin and User roles</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="feature-item">
+                            <i class="fas fa-cogs fa-2x text-danger mb-2"></i>
+                            <h5>Management</h5>
+                            <p>User administration</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    padding: 2rem 0;
+}
+
+.feature-item {
+    padding: 1rem;
+    text-align: center;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-item i {
+    opacity: 0.8;
+}
+
+.feature-item i:hover {
+    opacity: 1;
+}
+</style>
+{% endblock %}

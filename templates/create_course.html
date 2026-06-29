@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Create Course{% endblock %}
+
+{% block content %}
+{{ page_header('Create Course', url_for('admin_courses'), [{'title': 'Dashboard', 'url': url_for('dashboard')}, {'title': 'Admin Panel', 'url': url_for('admin')}, {'title': 'Courses', 'url': url_for('admin_courses')}, {'title': 'Create Course', 'url': None}]) }}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">
+                            <i class="fas fa-heading me-1"></i>Course Title *
+                        </label>
+                        <input type="text" class="form-control" id="title" name="title" required
+                               placeholder="Enter course title">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>Course Description
+                        </label>
+                        <textarea class="form-control" id="description" name="description" rows="4"
+                                  placeholder="Enter course description (optional)"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="image" class="form-label">
+                            <i class="fas fa-image me-1"></i>Course Image
+                        </label>
+                        <input type="file" class="form-control" id="image" name="image" 
+                               accept="image/*">
+                        <div class="form-text">
+                            Supported formats: PNG, JPG, JPEG, GIF, WEBP (max 16MB)
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="price" class="form-label">
+                            <i class="fas fa-tag me-1"></i>Course Price
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="price" name="price" 
+                                   step="0.01" min="0" placeholder="0.00">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <div class="form-text">
+                            Leave empty for free course
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="published" name="published">
+                            <label class="form-check-label" for="published">
+                                <i class="fas fa-eye me-1"></i>Publish Course
+                            </label>
+                            <div class="form-text">
+                                Published courses will be visible to users
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Create Course
+                        </button>
+                        <a href="{{ url_for('admin_courses') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="alert alert-info">
+        <h6><i class="fas fa-lightbulb me-2"></i>Tips for creating a course:</h6>
+        <ul class="mb-0">
+            <li>Use a clear and attractive title</li>
+            <li>Add a description to explain the course content</li>
+            <li>An image will make the course more appealing</li>
+            <li>After creating the course, you can add modules and lessons</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

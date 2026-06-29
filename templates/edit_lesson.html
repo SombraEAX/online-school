@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_header %}
+
+{% block title %}Edit Lesson{% endblock %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='css/editor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{{ page_header('Edit Lesson', url_for('admin_modules', course_id=lesson.module.course_id), breadcrumbs) }}
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">
+                            <i class="fas fa-heading me-1"></i>Lesson Title *
+                        </label>
+                        <input type="text" class="form-control" id="title" name="title" required
+                               value="{{ lesson.title }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>Lesson Content *
+                        </label>
+                        <textarea class="form-control wysiwyg" id="content" name="content" rows="12" required>{{ lesson.content }}</textarea>
+                        <div class="form-text">
+                            Use the toolbar to format text or add HTML tags manually
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-2"></i>OK
+                        </button>
+                        <a href="{{ url_for('admin_modules', course_id=lesson.module.course_id) }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize WYSIWYG editor
+    const editor = new WYSIWYGEditor('content', {
+        height: '400px',
+        placeholder: 'Enter lesson content...'
+    });
+});
+</script>
+{% endblock %}

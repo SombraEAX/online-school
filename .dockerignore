@@ -1,0 +1,13 @@
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+instance
+*.db
+server.log
+server_output.log
+.env
+.git
+.gitignore
+README.md

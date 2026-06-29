@@ -1,0 +1,14 @@
+.wysiwyg-btn-group {
+    margin-bottom: 5px;
+}
+
+.wysiwyg-toolbar {
+    padding-bottom: 3px !important;
+}
+
+@media (max-width: 768px) {
+    .wysiwyg-toolbar {
+        display: flex !important;
+        overflow-x: scroll !important;
+    }
+}

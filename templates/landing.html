@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ landing_page.header_title or course.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+            z-index: 1;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-to-courses {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 3;
+            color: white;
+            background: rgba(255,255,255,0.15);
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .back-to-courses:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-cta {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--btn);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 3px solid var(--btn);
+        }
+
+        .cta-button:hover {
+            background: transparent;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .hero-price {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-section">
+        <a href="{{ url_for('courses') }}" class="back-to-courses">
+            <i class="fas fa-arrow-left me-1"></i>All Courses
+        </a>
+        {% if landing_page.header_background_image %}
+        <img src="{{ url_for('static', filename='uploads/' + landing_page.header_background_image) }}" 
+             alt="{{ landing_page.header_title or '' }}" class="hero-background">
+        {% endif %}
+        <div class="hero-content">
+            <h1 class="hero-title">{{ landing_page.header_title or course.title }}</h1>
+            {% if landing_page.header_subtitle %}
+            <p class="hero-subtitle">{{ landing_page.header_subtitle | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+            {% if course.price %}
+            <div class="hero-price">{{ "%.2f"|format(course.price) }} $</div>
+            {% else %}
+            <div class="hero-price">Free</div>
+            {% endif %}
+            {% if landing_page.header_call_to_action %}
+            <p class="hero-cta">{{ landing_page.header_call_to_action | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+            <a href="{{ url_for('course_content', course_id=course.id) }}" class="cta-button">
+                Enroll Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Target Audience Section -->
+    {% if landing_page.target_audience %}
+    {% set audience = landing_page.target_audience | from_json %}
+    {% if audience %}
+    <section class="target-audience-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fade-in-up">{{ landing_page.audience_section_title or 'Who is this course for?' }}</h2>
+            <div class="row justify-content-center">
+                {% for item in audience %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="audience-card text-center fade-in-up">
+                        <div class="audience-icon">
+                            <i class="{{ item.image or 'fas fa-user' }} fa-3x"></i>
+                        </div>
+                        <h4 class="audience-title">{{ item.title }}</h4>
+                        {% if item.description %}
+                        <p class="audience-description">{{ item.description | replace('\n', '<br>') | safe }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    <!-- Timeline Section -->
+    {% if landing_page.timeline %}
+    {% set timeline_steps = landing_page.timeline | from_json %}
+    {% if timeline_steps %}
+    <section class="timeline-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fade-in-up">{{ landing_page.timeline_section_title or 'How does the course work?' }}</h2>
+            <div class="timeline">
+                {% for step in timeline_steps %}
+                <div class="timeline-item fade-in-up">
+                    <div class="timeline-marker">
+                        <span class="timeline-marker-number">{{ loop.index }}</span>
+                        {% if step.image %}
+                        <i class="{{ step.image }} timeline-marker-icon"></i>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title">{{ step.title }}</h4>
+                        {% if step.description %}
+                        <p class="timeline-description">{{ step.description | replace('\n', '<br>') | safe }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    <!-- Course Program Section -->
+    {% if landing_page.course_program %}
+    {% set program_items = landing_page.course_program | from_json %}
+    {% if program_items %}
+    <section class="course-program-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fade-in-up">{{ landing_page.course_program_section_title or 'Course Program' }}</h2>
+            <div class="row justify-content-center">
+                {% for item in program_items %}
+                <div class="col-lg-8 col-md-10 mb-4">
+                    <div class="program-item fade-in-up">
+                        <div class="program-icon">
+                            <i class="{{ item.image or 'fas fa-book' }}"></i>
+                        </div>
+                        <div class="program-content">
+                            <h4 class="program-title">{{ item.title }}</h4>
+                            {% if item.description %}
+                            <p class="program-description">{{ item.description | replace('\n', '<br>') | safe }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    <!-- FAQ Section -->
+    {% if landing_page.faq %}
+    {% set faq_items = landing_page.faq | from_json %}
+    {% if faq_items %}
+    <section class="faq-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fade-in-up">{{ landing_page.faq_section_title or 'Frequently Asked Questions' }}</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="accordion" id="faqAccordion">
+                        {% for item in faq_items %}
+                        <div class="accordion-item fade-in-up">
+                            <h3 class="accordion-header" id="faqHeading{{ loop.index }}">
+                                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ loop.index }}" 
+                                        aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" 
+                                        aria-controls="faqCollapse{{ loop.index }}">
+                                    {{ item.question }}
+                                </button>
+                            </h3>
+                            <div id="faqCollapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                                 aria-labelledby="faqHeading{{ loop.index }}" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    {{ item.answer | replace('\n', '<br>') | safe }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    <!-- Topics Section -->
+    {% if landing_page.topics %}
+    {% set topic_items = landing_page.topics | from_json %}
+    {% if topic_items %}
+    <section class="topics-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-4 fade-in-up">{{ landing_page.topics_section_title or 'Course Topics' }}</h2>
+            {% if landing_page.topics_section_description %}
+            <p class="text-center mb-5 fade-in-up topics-section-description">{{ landing_page.topics_section_description | replace('\n', '<br>') | safe }}</p>
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="accordion" id="topicsAccordion">
+                        {% for item in topic_items %}
+                        <div class="accordion-item fade-in-up">
+                            <h3 class="accordion-header" id="topicHeading{{ loop.index }}">
+                                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#topicCollapse{{ loop.index }}" 
+                                        aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" 
+                                        aria-controls="topicCollapse{{ loop.index }}">
+                                    <span class="topic-accordion-title">{{ item.title }}</span>
+                                </button>
+                            </h3>
+                            <div id="topicCollapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                                 aria-labelledby="topicHeading{{ loop.index }}" data-bs-parent="#topicsAccordion">
+                                <div class="accordion-body">
+                                    {% if item.description %}
+                                    <p class="topic-description">{{ item.description | replace('\n', '<br>') | safe }}</p>
+                                    {% endif %}
+                                    {% if item.subitems %}
+                                    <ul class="topic-subitems list-unstyled">
+                                        {% for sub in item.subitems %}
+                                        <li class="topic-subitem">
+                                            {% if sub.icon %}
+                                            <i class="{{ sub.icon }} topic-subitem-icon"></i>
+                                            {% endif %}
+                                            {{ sub.name }}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
+    <!-- CTA Section -->
+    {% if landing_page.cta_title or landing_page.cta_text %}
+    <section class="cta-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="cta-content">
+                        {% if landing_page.cta_title %}
+                        <h2 class="cta-title fade-in-up">{{ landing_page.cta_title }}</h2>
+                        {% endif %}
+                        {% if landing_page.cta_text %}
+                        <p class="cta-text fade-in-up">{{ landing_page.cta_text | replace('\n', '<br>') | safe }}</p>
+                        {% endif %}
+                        {% if course.price %}
+                        <div class="cta-price fade-in-up">{{ "%.2f"|format(course.price) }} $</div>
+                        {% else %}
+                        <div class="cta-price fade-in-up">Free</div>
+                        {% endif %}
+                        <a href="{{ url_for('course_content', course_id=course.id) }}" class="cta-btn fade-in-up">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+                {% if landing_page.cta_image %}
+                <div class="col-lg-6">
+                    <div class="cta-image-container fade-in-up">
+                        <img src="{{ url_for('static', filename='uploads/' + landing_page.cta_image) }}" 
+                             alt="{{ landing_page.cta_title or '' }}" class="cta-image">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Author Section -->
+    {% if author_block %}
+    <section class="author-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fade-in-up">Course Author</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="author-card fade-in-up">
+                        {% if author_block.image %}
+                        <div class="author-image-wrapper">
+                            <img src="{{ url_for('static', filename='uploads/' + author_block.image) }}" 
+                                 alt="{{ author_block.name }}" class="author-image">
+                        </div>
+                        {% endif %}
+                        <div class="author-info">
+                            <h3 class="author-name">{{ author_block.name }}</h3>
+                            {% if author_block.title %}
+                            <p class="author-title">{{ author_block.title }}</p>
+                            {% endif %}
+                            {% if author_block.bio %}
+                            <p class="author-bio">{{ author_block.bio }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <style>
+    :root {
+        --primary: {{ theme.primary_color if theme else '#007bff' }};
+        --secondary: {{ theme.secondary_color if theme else '#0056b3' }};
+        --text: {{ theme.text_color if theme else '#666666' }};
+        --bg: {{ theme.bg_color if theme else '#f8f9fa' }};
+        --heading: {{ theme.heading_color if theme else '#333333' }};
+        --accent: {{ theme.accent_color if theme else '#ffc107' }};
+        --btn: {{ theme.button_color if theme else '#007bff' }};
+        --btn-text: {{ theme.button_text_color if theme else '#ffffff' }};
+    }
+
+    .target-audience-section {
+        background: var(--bg);
+    }
+
+    .audience-card {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 2px solid transparent;
+    }
+
+    .audience-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border-color: var(--btn);
+    }
+
+    .audience-icon {
+        margin-bottom: 1.5rem;
+        color: var(--btn);
+    }
+
+    .audience-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--heading);
+    }
+
+    .audience-description {
+        font-size: 0.9rem;
+        color: var(--text);
+        margin-top: 0.5rem;
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+        .audience-card {
+            padding: 30px 20px;
+        }
+        
+        .audience-title {
+            font-size: 1.1rem;
+        }
+    }
+
+    .timeline-section {
+        background: #fff;
+    }
+
+    .timeline {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px 0;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 40px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(to bottom, var(--btn), var(--secondary));
+        border-radius: 3px;
+    }
+
+    .timeline-item {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 40px;
+        padding-left: 100px;
+    }
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: 10px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--btn), var(--secondary));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+        z-index: 1;
+    }
+
+    .timeline-marker-number {
+        font-size: 1.2rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .timeline-marker-icon {
+        font-size: 0.8rem;
+        margin-top: 2px;
+    }
+
+    .timeline-content {
+        background: var(--bg);
+        padding: 25px 30px;
+        border-radius: 12px;
+        flex: 1;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--btn);
+    }
+
+    .timeline-content:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+    }
+
+    .timeline-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0 0 10px 0;
+        color: var(--heading);
+    }
+
+    .timeline-description {
+        font-size: 0.95rem;
+        color: var(--text);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .timeline::before {
+            left: 25px;
+        }
+
+        .timeline-item {
+            padding-left: 70px;
+        }
+
+        .timeline-marker {
+            left: 0;
+            width: 50px;
+            height: 50px;
+        }
+
+        .timeline-marker-number {
+            font-size: 1rem;
+        }
+
+        .timeline-marker-icon {
+            font-size: 0.7rem;
+        }
+
+        .timeline-content {
+            padding: 20px;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+        }
+    }
+
+    .course-program-section {
+        background: #fff;
+    }
+
+    .program-item {
+        display: flex;
+        align-items: flex-start;
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+    }
+
+    .program-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        border-color: var(--btn);
+    }
+
+    .program-icon {
+        flex-shrink: 0;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--btn), var(--secondary));
+        color: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 25px;
+    }
+
+    .program-content {
+        flex: 1;
+    }
+
+    .program-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0 0 10px 0;
+        color: var(--heading);
+    }
+
+    .program-description {
+        font-size: 0.95rem;
+        color: var(--text);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .program-item {
+            padding: 20px;
+        }
+
+        .program-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .program-title {
+            font-size: 1.1rem;
+        }
+    }
+
+    .faq-section {
+        background: var(--bg);
+    }
+
+    .accordion-item {
+        border: 1px solid #e0e0e0;
+        border-radius: 0 !important;
+        margin-bottom: 0;
+        overflow: hidden;
+    }
+    .accordion-item:first-of-type {
+        border-radius: 8px 8px 0 0 !important;
+    }
+    .accordion-item:last-of-type {
+        border-radius: 0 0 8px 8px !important;
+    }
+    .accordion-item:only-of-type {
+        border-radius: 8px !important;
+    }
+    .accordion-item:not(:first-of-type) {
+        border-top: 1px solid #e0e0e0 !important;
+        margin-top: -1px;
+    }
+
+    .accordion-button {
+        background: #fff;
+        color: var(--heading);
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 18px 25px;
+        box-shadow: none !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: var(--btn);
+        color: #fff;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        filter: brightness(0) invert(1);
+    }
+
+    .accordion-button:hover:not(.collapsed) {
+        background: var(--secondary);
+    }
+
+    .accordion-body {
+        padding: 20px 25px;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: var(--text);
+    }
+
+    .topics-section {
+        background: #fff;
+    }
+
+    .topics-section-description {
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: var(--text);
+    }
+
+    .topic-accordion-title {
+        font-weight: 600;
+    }
+
+    .topic-description {
+        margin-bottom: 1rem;
+        color: #555;
+        line-height: 1.7;
+    }
+
+    .topic-subitems {
+        margin: 0;
+        padding: 0;
+    }
+
+    .topic-subitem {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        font-size: 0.95rem;
+        color: #444;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .topic-subitem:last-child {
+        border-bottom: none;
+    }
+
+    .topic-subitem-icon {
+        color: var(--btn);
+        margin-right: 12px;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+        .accordion-button {
+            font-size: 1rem;
+            padding: 15px 20px;
+        }
+
+        .accordion-body {
+            padding: 15px 20px;
+        }
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, var(--btn), var(--secondary));
+        color: white;
+    }
+
+    .cta-content {
+        padding-right: 40px;
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .cta-text {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .cta-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+    }
+
+    .cta-btn {
+        display: inline-block;
+        padding: 15px 40px;
+        background: white;
+        color: var(--btn);
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border: 3px solid white;
+    }
+
+    .cta-btn:hover {
+        background: transparent;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .cta-image-container {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .cta-image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    @media (max-width: 991px) {
+        .cta-content {
+            padding-right: 0;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+        }
+
+        .cta-text {
+            font-size: 1rem;
+        }
+
+        .cta-price {
+            font-size: 2rem;
+        }
+
+        .cta-image-container {
+            margin-top: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .cta-section {
+            padding: 3rem 0;
+        }
+
+        .cta-title {
+            font-size: 1.8rem;
+        }
+
+        .cta-btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+        }
+    }
+
+    .author-section {
+        background: var(--bg);
+    }
+
+    .author-card {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        gap: 30px;
+    }
+
+    .author-image-wrapper {
+        flex-shrink: 0;
+    }
+
+    .author-image {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--btn);
+        box-shadow: 0 5px 15px rgba(0,123,255,0.2);
+    }
+
+    .author-info {
+        flex: 1;
+    }
+
+    .author-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: var(--heading);
+    }
+
+    .author-title {
+        font-size: 1.1rem;
+        color: var(--btn);
+        font-weight: 600;
+        margin: 0 0 15px 0;
+    }
+
+    .author-bio {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: var(--text);
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .author-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .author-image {
+            width: 150px;
+            height: 150px;
+        }
+
+        .author-name {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
