@@ -1,7 +1,7 @@
 import logging
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
 from app import app, db, BotUser, BotSettings, Article
 
 logging.basicConfig(
@@ -138,7 +138,7 @@ def main():
         return
 
     with app.app_context():
-        application = Application.builder().token(BOT_TOKEN).build()
+        application = ApplicationBuilder().token(BOT_TOKEN).build()
         application.add_handler(CommandHandler('start', start))
         application.add_handler(CommandHandler('help', lambda u, c: u.message.reply_text('/start - start\n/help - help\n/lessons - lessons')))
         application.add_handler(CommandHandler('lessons', start))
