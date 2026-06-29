@@ -5,7 +5,7 @@ services:
     region: frankfurt
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python seed.py && python bot.py & gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    startCommand: chmod +x start.sh && ./start.sh
     envVars:
       - key: DATABASE_URL
         fromDatabase:
