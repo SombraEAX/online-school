@@ -2,6 +2,8 @@
 
 A simple online school engine with courses, landing pages, and a Telegram chatbot.
 
+**Demo:** [online-school-7xtl.onrender.com](https://online-school-7xtl.onrender.com/)
+
 ## Features
 
 - Adding content through the admin panel
