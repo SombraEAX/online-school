@@ -392,7 +392,7 @@ with app.app_context():
         cta_image='home-cta.jpg',
         chatbot_cta_text='Have questions? Chat with our bot.',
         chatbot_button_text='Open Chat Bot',
-        chatbot_button_url='https://t.me/your_school_bot',
+        chatbot_button_url='https://t.me/mira_test_school_bot',
         is_active=True
     )
     db.session.add(home_page)
