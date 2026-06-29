@@ -71,11 +71,11 @@ def _seed_images():
     print(f"  {ok}/{len(SEED_IMAGES) + 1} files ready")
 
 with app.app_context():
+    _seed_images()
+
     if Course.query.first():
         print("Database already has data — skipping seed.")
         sys.exit(0)
-
-    _seed_images()
 
     users_data = [
         {'username': 'admin', 'email': 'admin@school.com', 'password': 'admin123', 'role': 'admin'},
