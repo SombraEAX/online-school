@@ -3,6 +3,10 @@ set -m
 
 python seed.py
 
+# Kill any leftover bot processes to avoid Telegram conflict
+pkill -f "python.*bot.py" 2>/dev/null || true
+sleep 2
+
 python bot.py &
 BOT_PID=$!
 
@@ -12,6 +16,8 @@ GUNI_PID=$!
 while true; do
     if ! kill -0 $BOT_PID 2>/dev/null; then
         echo "bot.py crashed, restarting..."
+        # Wait for old connection to fully release
+        sleep 3
         python bot.py &
         BOT_PID=$!
     fi
